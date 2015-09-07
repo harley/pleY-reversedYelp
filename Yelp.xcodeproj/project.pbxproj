@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 47;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -225,8 +225,8 @@
 		222D8A4D19CCF9F900D2DB53 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0600;
-				ORGANIZATIONNAME = "Timothy Lee";
+				LastUpgradeCheck = 0640;
+				ORGANIZATIONNAME = "Harley Trung";
 				TargetAttributes = {
 					222D8A5419CCF9F900D2DB53 = {
 						CreatedOnToolsVersion = 6.0;
@@ -238,7 +238,7 @@
 				};
 			};
 			buildConfigurationList = 222D8A5019CCF9F900D2DB53 /* Build configuration list for PBXProject "Yelp" */;
-			compatibilityVersion = "Xcode 3.2";
+			compatibilityVersion = "Xcode 6.3";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
