@@ -8,7 +8,7 @@
 
 import UIKit
 
-class BusinessesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class BusinessesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, FiltersViewControllerDelegate {
 
     var businesses: [Business]!
     
@@ -65,14 +65,27 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
         return cell
     }
 
-    /*
+
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
-    }
-    */
+        
 
+        let nc = segue.destinationViewController as! UINavigationController
+        let fvc = nc.topViewController as! FiltersViewController
+        fvc.delegate = self
+    }
+
+    func filtersViewController(filtersViewController: FiltersViewController, didUpdateFilters filters: [String : AnyObject]) {
+        var categories = filters["categories"] as? [String]
+        Business.searchWithTerm("Restaurants", sort: nil, categories: categories, deals: nil) {
+            (businesses, error) -> Void in
+            self.businesses = businesses
+            self.tableView.reloadData()
+        }
+        
+    }
 }
