@@ -8,11 +8,16 @@
 
 import UIKit
 
-class BusinessesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, FiltersViewControllerDelegate {
+class BusinessesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, FiltersViewControllerDelegate, UISearchBarDelegate {
 
     var businesses: [Business]!
+    var scopedBusinesses: [Business]?
     
     @IBOutlet weak var tableView: UITableView!
+
+    var searchBar: UISearchBar!
+    var isSearching: Bool = false
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -40,6 +45,12 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
                 println(business.address!)
             }
         }
+
+        searchBar = UISearchBar()
+        searchBar.sizeToFit()
+        navigationItem.titleView = searchBar
+        searchBar.delegate = self
+
     }
 
     override func didReceiveMemoryWarning() {
@@ -47,24 +58,44 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
         // Dispose of any resources that can be recreated.
     }
 
-    // MARK: - 
+    // MARK: - UITableViewDelegate
 
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if businesses != nil {
-            return businesses!.count
+        if isSearching {
+            return scopedBusinesses!.count
         } else {
-            return 0
+            return businesses?.count ?? 0
         }
     }
 
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("BusinessCell", forIndexPath: indexPath) as! BusinessCell
 
-        cell.business = businesses[indexPath.row]
+        if isSearching {
+            cell.business = scopedBusinesses![indexPath.row]
+        } else {
+            cell.business = businesses[indexPath.row]
+        }
         
         return cell
     }
 
+    // MARK: - UISearchBarDelegate
+    func searchBarSearchButtonClicked(searchBar: UISearchBar) { // called when keyboard search button pressed
+        println("searching \(searchBar.text)")
+        if !searchBar.text.isEmpty {
+            self.isSearching = true
+            scopedBusinesses = businesses.filter({ (biz:Business) -> Bool in
+                let found = biz.name?.rangeOfString(searchBar.text, options: NSStringCompareOptions.CaseInsensitiveSearch)
+                return found != nil
+            })
+        }
+        tableView.reloadData()
+    }
+
+    func searchBarCancelButtonClicked(searchBar: UISearchBar) { // called when cancel button pressed
+        println("cancel search")
+    }
 
     // MARK: - Navigation
 
