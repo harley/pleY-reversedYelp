@@ -24,7 +24,7 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
         tableView.dataSource = self
         tableView.delegate = self
         tableView.rowHeight = UITableViewAutomaticDimension
-        tableView.estimatedRowHeight = 120
+        tableView.estimatedRowHeight = 100
 
 
 //        Business.searchWithTerm("Thai", completion: { (businesses: [Business]!, error: NSError!) -> Void in
@@ -50,7 +50,6 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
         searchBar.sizeToFit()
         navigationItem.titleView = searchBar
         searchBar.delegate = self
-
     }
 
     override func didReceiveMemoryWarning() {
@@ -132,12 +131,21 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
     }
 
     func filtersViewController(filtersViewController: FiltersViewController, didUpdateFilters filters: [String : AnyObject]) {
+        println("filters: \(filters)")
         var categories = filters["categories"] as? [String]
-        Business.searchWithTerm("Restaurants", sort: nil, categories: categories, deals: nil) {
+        var deals = filters["deals"] as? Bool
+        var sort:YelpSortMode?
+        if filters["sort"] != nil {
+            sort = YelpSortMode(rawValue: filters["sort"] as! Int)
+        } else {
+            sort = nil
+        }
+        var term = filters["term"] as? String
+        Business.searchWithTerm("Restaurants", sort: sort, categories: categories, deals: deals, completion: {
             (businesses, error) -> Void in
             self.businesses = businesses
             self.tableView.reloadData()
-        }
+        })
         
     }
 }
