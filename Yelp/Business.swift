@@ -16,7 +16,7 @@ class Business: NSObject {
     let distance: String?
     let ratingImageURL: NSURL?
     let reviewCount: NSNumber?
-    
+
     init(dictionary: NSDictionary) {
         name = dictionary["name"] as? String
         
