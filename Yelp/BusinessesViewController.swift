@@ -62,7 +62,7 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
 
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if isSearching {
-            return scopedBusinesses!.count
+            return scopedBusinesses?.count ?? 0
         } else {
             return businesses?.count ?? 0
         }
@@ -85,18 +85,39 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
         println("searching \(searchBar.text)")
         if !searchBar.text.isEmpty {
             self.isSearching = true
-            scopedBusinesses = businesses.filter({ (biz:Business) -> Bool in
-                let found = biz.name?.rangeOfString(searchBar.text, options: NSStringCompareOptions.CaseInsensitiveSearch)
-                return found != nil
+            // use this if we want to filter results without via API
+            // scopedBusinesses = businesses.filter({ (biz:Business) -> Bool in
+            //   let found = biz.name?.rangeOfString(searchBar.text, options: NSStringCompareOptions.CaseInsensitiveSearch)
+            //   return found != nil
+            // })
+            Business.searchWithTerm(searchBar.text, completion: { (businesses, error) -> Void in
+                self.scopedBusinesses = businesses
+                self.tableView.reloadData()
+                println("reloaded data")
             })
+        } else {
+            tableView.reloadData()
         }
-        tableView.reloadData()
+        searchBar.endEditing(true)
     }
 
     func searchBarCancelButtonClicked(searchBar: UISearchBar) { // called when cancel button pressed
         println("cancel search")
+        self.isSearching = false
+        tableView.reloadData()
     }
 
+    func searchBarResultsListButtonClicked(searchBar: UISearchBar) {
+        println("result list clicked")
+        tableView.reloadData()
+    }
+
+    func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchText.isEmpty {
+            self.isSearching = false
+        }
+        tableView.reloadData()
+    }
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
