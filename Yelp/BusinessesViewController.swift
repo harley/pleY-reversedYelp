@@ -90,7 +90,7 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
                     println("[scrolling] total: \(self.total)")
                     self.tableView.reloadData()
                 } else {
-                    println("**Search returns nothing**")
+                    println("**Search returns nothing. Check limit or other params**")
                 }
                 self.tableView.finishInfiniteScroll()
             })

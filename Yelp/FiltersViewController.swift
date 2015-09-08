@@ -38,6 +38,7 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
 
     let dealFilterOptions = ["Offer a Deal"]
     let radiusFilterOptions = ["Auto", "0.3 mile", "1 miles", "5 miles", "20 miles"]
+    let mileToMeter = 1609.34
     let radiusFilterValues:[Double?] = [nil, 0.3, 1, 5, 20]
     let sortFilterOptions = ["Best Match", "Distance", "Rating"]
     let sortFilterValues = [YelpSortMode.BestMatched, YelpSortMode.Distance, YelpSortMode.HighestRated]
@@ -84,7 +85,9 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
                 filters["radius"] = nil
                 for (key, value) in sectionSwitches {
                     if value {
-                        filters["radius"] = key
+                        if let mile = radiusFilterValues[key] {
+                            filters["radius"] = mile * mileToMeter
+                        }
                         break
                     }
                 }
