@@ -10,8 +10,8 @@ import UIKit
 
 class BusinessesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, FiltersViewControllerDelegate, UISearchBarDelegate {
 
+    //    var businessCollection: [BusinessCollection]!
     var businesses: [Business]!
-//    var businessCollection: [BusinessCollection]!
     var scopedBusinesses: [Business]?
     
     @IBOutlet weak var tableView: UITableView!
@@ -21,7 +21,7 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
     var currentFilters = [String : AnyObject]()
 
     var offset: Int = 0
-    var limit: Int = 20
+    let limit: Int = 20
     var total: Int = 0
 
     override func viewDidLoad() {
@@ -63,44 +63,48 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
     }
 
     func loadBusinesses(filters: [String:AnyObject]) {
-        println("loading \(filters)")
-//        var categories = filters["categories"] as? [String]
-//        var deals = filters["deals"] as? Bool
-//        var sort:YelpSortMode?
-//        if filters["sort"] != nil {
-//            sort = YelpSortMode(rawValue: filters["sort"] as! Int)
-//        } else {
-//            sort = nil
-//        }
+        println("loading by \(filters)")
 
         Business.searchWithParams(filters, completion: {
             (businessCollection, error) -> Void in
             self.businesses = businessCollection.businesses
             self.total      = businessCollection.total
-            println("total: \(self.total)")
+            println("total businesses loaded: \(self.total)")
             self.tableView.reloadData()
         })
     }
 
-
     func loadBusinessesWhileScrolling(var filters: [String:AnyObject]) {
-        println("loading \(filters)")
         self.offset = offset + limit
         filters["offset"] = offset
+
+        println("current total: \(total); loading by \(filters)")
 
         if offset < total {
             Business.searchWithParams(filters, completion: {
                 (businessCollection, error) -> Void in
-                self.businesses = businessCollection.businesses
-                self.total = businessCollection.total
-                println("total: \(self.total)")
-                self.tableView.reloadData()
+                if businessCollection != nil {
+                    self.appendDatasource(businessCollection.businesses)
+
+                    self.total = businessCollection.total
+                    println("[scrolling] total: \(self.total)")
+                    self.tableView.reloadData()
+                } else {
+                    println("**Search returns nothing**")
+                }
                 self.tableView.finishInfiniteScroll()
             })
         } else {
             self.tableView.finishInfiniteScroll()
         }
+    }
 
+    func appendDatasource(bizzes: [Business]!) {
+        if isSearching {
+            self.scopedBusinesses?.extend(bizzes)
+        } else {
+            self.businesses.extend(bizzes)
+        }
     }
 
     override func didReceiveMemoryWarning() {

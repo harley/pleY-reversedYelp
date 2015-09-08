@@ -93,22 +93,34 @@ class YelpClient: BDBOAuth1RequestOperationManager {
         // For additional parameters, see http://www.yelp.com/developers/documentation/v2/search_api
 
         // Default the location to San Francisco
-        var parameters: [String : AnyObject] = ["term": filters["term"] as? String ?? "Restaurants", "ll": "37.785771,-122.406165"]
+        var parameters: [String : AnyObject] = ["ll": "37.785771,-122.406165"]
+
+        // Search term (e.g. "food", "restaurants"). If term isn’t included we search everything.
+        parameters["term"] = filters["term"]
+
+        // Sort mode: 0=Best matched (default), 1=Distance, 2=Highest Rated. If the mode is 1 or 2 a search may retrieve an additional 20 businesses past the initial limit of the first 20 results. This is done by specifying an offset and limit of 20. Sort by distance is only supported for a location or geographic search. The rating sort is not strictly sorted by the rating value, but by an adjusted rating value that takes into account the number of ratings, similar to a bayesian average. This is so a business with 1 rating of 5 stars doesn’t immediately jump to the top.
 
         parameters["sort"] = filters["sort"]
+
         parameters["offset"] = filters["offset"]
         parameters["limit"] = filters["limit"]
 
+        // Category to filter search results with. See the list of supported categories. The category filter can be a list of comma delimited categories. For example, 'bars,french' will filter by Bars and French. The category identifier should be used (for example 'discgolf', not 'Disc Golf').
         let categories = filters["categories"] as! [String]?
         if categories != nil && categories!.count > 0 {
             parameters["category_filter"] = ",".join(categories!)
         }
 
-        if filters["deals"] != nil && filters["deals"] as! Int == 1 {
+        if filters["deals"] != nil {
             parameters["deals_filter"] = filters["deals"]!
         }
 
-        println(parameters)
+        // Search radius in meters. If the value is too large, a AREA_TOO_LARGE error may be returned. The max value is 40000 meters (25 miles).
+        if filters["radius"] != nil {
+            parameters["radius_filter"] = filters["radius"]!
+        }
+
+        println("Search: \(parameters)")
 
         return self.GET("search", parameters: parameters, success: { (operation: AFHTTPRequestOperation!, response: AnyObject!) -> Void in
             var dictionaries = response["businesses"] as? [NSDictionary]
