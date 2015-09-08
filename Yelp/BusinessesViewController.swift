@@ -67,10 +67,14 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
 
         Business.searchWithParams(filters, completion: {
             (businessCollection, error) -> Void in
-            self.businesses = businessCollection.businesses
-            self.total      = businessCollection.total
-            println("total businesses loaded: \(self.total)")
-            self.tableView.reloadData()
+            if businessCollection != nil {
+                self.businesses = businessCollection.businesses
+                self.total      = businessCollection.total
+                println("total businesses loaded: \(self.total)")
+                self.tableView.reloadData()
+            } else {
+                println("**Search returns nothing. Check limit, other params or the Internet**")
+            }
         })
     }
 
