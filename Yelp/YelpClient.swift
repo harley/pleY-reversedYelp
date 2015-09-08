@@ -9,6 +9,12 @@
 import UIKit
 
 // You can register for Yelp API keys here: http://www.yelp.com/developers/manage_api_keys
+//let yelpConsumerKey = "vxKwwcR_NMQ7WaEiQBK_CA"
+//let yelpConsumerSecret = "33QCvh5bIF5jIHR5klQr7RtBDhQ"
+//let yelpToken = "uRcRswHFYa1VkDrGV6LAW2F8clGh5JHV"
+//let yelpTokenSecret = "mqtKIxMIR4iBtBPZCmCLEb-Dz3Y"
+
+
 let yelpConsumerKey = "vxKwwcR_NMQ7WaEiQBK_CA"
 let yelpConsumerSecret = "33QCvh5bIF5jIHR5klQr7RtBDhQ"
 let yelpToken = "uRcRswHFYa1VkDrGV6LAW2F8clGh5JHV"
@@ -76,6 +82,39 @@ class YelpClient: BDBOAuth1RequestOperationManager {
             var dictionaries = response["businesses"] as? [NSDictionary]
             if dictionaries != nil {
                 completion(Business.businesses(array: dictionaries!), nil)
+            }
+            }, failure: { (operation: AFHTTPRequestOperation!, error: NSError!) -> Void in
+                completion(nil, error)
+        })
+    }
+
+
+    func searchWithParams(filters: [String : AnyObject], completion: (BusinessCollection!, NSError!) -> Void) -> AFHTTPRequestOperation {
+        // For additional parameters, see http://www.yelp.com/developers/documentation/v2/search_api
+
+        // Default the location to San Francisco
+        var parameters: [String : AnyObject] = ["term": filters["term"] as! String, "ll": "37.785771,-122.406165"]
+
+        parameters["sort"] = filters["sort"]
+        parameters["offset"] = filters["offset"]
+        parameters["limit"] = filters["limit"]
+
+        let categories = filters["categories"] as! [String]?
+        if categories != nil && categories!.count > 0 {
+            parameters["category_filter"] = ",".join(categories!)
+        }
+
+        if filters["deals"] != nil {
+            parameters["deals_filter"] = filters["deals"]!
+        }
+
+        println(parameters)
+
+        return self.GET("search", parameters: parameters, success: { (operation: AFHTTPRequestOperation!, response: AnyObject!) -> Void in
+            var dictionaries = response["businesses"] as? [NSDictionary]
+            if dictionaries != nil {
+                let collection = BusinessCollection(businesses: Business.businesses(array: dictionaries!), total: response["total"] as! Int)
+                completion(collection, nil)
             }
             }, failure: { (operation: AFHTTPRequestOperation!, error: NSError!) -> Void in
                 completion(nil, error)
