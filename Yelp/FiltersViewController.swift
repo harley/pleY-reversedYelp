@@ -20,6 +20,9 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
     var categories: [[String:String]]!
     var switchStates = [Int:[Int:Bool]]()
 
+    var showAllCategories: Bool! = false
+    let minimumNumberOfCategoriesToShow = 3
+
     // order of filters:
     // deals
     // distance
@@ -38,6 +41,14 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
     let radiusFilterValues:[Double?] = [nil, 0.3, 1, 5, 20]
     let sortFilterOptions = ["Best Match", "Distance", "Rating"]
     let sortFilterValues = [YelpSortMode.BestMatched, YelpSortMode.Distance, YelpSortMode.HighestRated]
+
+    func numberOfCategoriesToShow() -> Int {
+        if showAllCategories! {
+            return categories.count
+        } else {
+            return minimumNumberOfCategoriesToShow
+        }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -113,36 +124,41 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
         case 2:
             return sortFilterOptions.count
         case 3:
-            return categories.count
+//            return categories.count
+            return numberOfCategoriesToShow()
         default:
             return 0
         }
     }
-    
+
+    func showSeeAllToggle(indexPath: NSIndexPath) -> Bool {
+        return !showAllCategories && (indexPath.section == 3) && (indexPath.row == numberOfCategoriesToShow()-1)
+    }
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        if showSeeAllToggle(indexPath) {
+            let cell = tableView.dequeueReusableCellWithIdentifier("SeeAllToggleCell", forIndexPath: indexPath) as! SeeAllToggleCell
+            return cell
+        } else {
+            let cell = tableView.dequeueReusableCellWithIdentifier("SwitchCell", forIndexPath: indexPath) as! SwitchCell
 
-        let cell = tableView.dequeueReusableCellWithIdentifier("SwitchCell", forIndexPath: indexPath) as! SwitchCell
-        cell.delegate = self
-        cell.onSwitch.on = switchStates[indexPath.section]?[indexPath.row] ?? false
+            cell.onSwitch.on = switchStates[indexPath.section]?[indexPath.row] ?? false
 
-        switch indexPath.section {
-        case 0:
-            // Deals
-            cell.switchLabel.text = dealFilterOptions[indexPath.row]
-        case 1:
-            cell.switchLabel.text = radiusFilterOptions[indexPath.row]
-        case 2:
-            cell.switchLabel.text = sortFilterOptions[indexPath.row]
-        case 3:
-            cell.switchLabel.text = categories[indexPath.row]["name"]
-        default:
-            break
+            switch indexPath.section {
+            case 0:
+                // Deals
+                cell.switchLabel.text = dealFilterOptions[indexPath.row]
+            case 1:
+                cell.switchLabel.text = radiusFilterOptions[indexPath.row]
+            case 2:
+                cell.switchLabel.text = sortFilterOptions[indexPath.row]
+            case 3:
+                cell.switchLabel.text = categories[indexPath.row]["name"]
+            default:
+                break
+            }
+            cell.delegate = self
+            return cell
         }
-
-
-        cell.delegate = self
-
-        return cell
     }
 
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -150,8 +166,6 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
     }
 
     func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-
-        //copied from week 1 lab
         var headerView = UIView(frame: CGRect(x: 0, y: 0, width: 320, height: 100))
         headerView.backgroundColor = UIColor.darkGrayColor()
 
@@ -175,6 +189,18 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
         headerView.addSubview(titleLabel)
 
         return headerView
+    }
+
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        let cell = tableView.cellForRowAtIndexPath(indexPath)
+
+        if (cell is SeeAllToggleCell) {
+            // TODO: convert to collapsable section here?
+            if showSeeAllToggle(indexPath) {
+                self.showAllCategories = true
+                tableView.reloadSections(NSIndexSet(index: indexPath.section), withRowAnimation: UITableViewRowAnimation.Automatic)
+            }
+        }
     }
 
     func yelpCategories() -> [[String:String]] {
