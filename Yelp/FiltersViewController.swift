@@ -73,6 +73,7 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
         dismissViewControllerAnimated(true, completion: nil)
 
         var filters = [String : AnyObject]()
+        filters["terms"] = "Restaurants"
 
         for (section, sectionSwitches) in switchStates {
             println("checking section \(section): \(sectionSwitches)")

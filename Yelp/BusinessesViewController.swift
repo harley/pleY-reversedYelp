@@ -64,15 +64,15 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
 
     func loadBusinesses(filters: [String:AnyObject]) {
         println("loading \(filters)")
-        var categories = filters["categories"] as? [String]
-        var deals = filters["deals"] as? Bool
-        var sort:YelpSortMode?
-        if filters["sort"] != nil {
-            sort = YelpSortMode(rawValue: filters["sort"] as! Int)
-        } else {
-            sort = nil
-        }
-        var term = filters["term"] as! String
+//        var categories = filters["categories"] as? [String]
+//        var deals = filters["deals"] as? Bool
+//        var sort:YelpSortMode?
+//        if filters["sort"] != nil {
+//            sort = YelpSortMode(rawValue: filters["sort"] as! Int)
+//        } else {
+//            sort = nil
+//        }
+
         Business.searchWithParams(filters, completion: {
             (businessCollection, error) -> Void in
             self.businesses = businessCollection.businesses
@@ -84,7 +84,6 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
 
 
     func loadBusinessesWhileScrolling(var filters: [String:AnyObject]) {
-
         println("loading \(filters)")
         self.offset = offset + limit
         filters["offset"] = offset
