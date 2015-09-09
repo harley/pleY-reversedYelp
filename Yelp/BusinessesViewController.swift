@@ -39,13 +39,13 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
         currentFilters["offset"] = offset
         currentFilters["limit"] = limit
 
-        loadBusinesses(currentFilters)
 
         searchBar = UISearchBar()
-        searchBar.text = currentFilters["term"] as! String
         searchBar.sizeToFit()
         navigationItem.titleView = searchBar
         searchBar.delegate = self
+
+        loadBusinesses(currentFilters)
 
         // change indicator view style to white
         tableView.infiniteScrollIndicatorStyle = UIActivityIndicatorViewStyle.Gray
@@ -64,6 +64,11 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
 
     func loadBusinesses(filters: [String:AnyObject]) {
         println("loading by \(filters)")
+        self.isSearching = false
+
+        if filters["term"] != nil {
+            searchBar.text = filters["term"] as! String
+        }
 
         Business.searchWithParams(filters, completion: {
             (businessCollection, error) -> Void in

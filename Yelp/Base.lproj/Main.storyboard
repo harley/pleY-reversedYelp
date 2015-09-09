@@ -66,6 +66,9 @@
                                                 <constraint firstAttribute="centerX" secondItem="6bc-lR-BXm" secondAttribute="centerX" id="sR2-0S-eOI"/>
                                             </constraints>
                                         </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="mainLabel" destination="6bc-lR-BXm" id="cfn-Zs-rO5"/>
+                                        </connections>
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>

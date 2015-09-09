@@ -18,7 +18,9 @@ class SwitchCell: UITableViewCell {
     @IBOutlet weak var onSwitch: UISwitch!
     
     weak var delegate: SwitchCellDelegate?
-    
+
+    var filterInputIndex: Int!
+
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code

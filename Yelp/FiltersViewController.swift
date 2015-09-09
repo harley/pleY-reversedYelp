@@ -41,7 +41,7 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
         } else {
             let deals = FilterSection(name: "Deals", collapsable: false, multipleChoice: false, filterInputs: [FilterInput(name: "Offer A Deal", code: true)])
             let distance = FilterSection(name: "Distance", collapsable: true, multipleChoice: false, filterInputs: [
-                    FilterInput(name: "Auto", code: 0),
+                    FilterInput(name: "Auto", code: 0, switchValue: true),
                     FilterInput(name: "0.3 mile", code: 0.3 * mileToMeter),
                     FilterInput(name: "1 mile", code: 1 * mileToMeter),
                     FilterInput(name: "5 miles", code: 5 * mileToMeter),
@@ -49,7 +49,7 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
                 ])
             let sort = FilterSection(name: "Sort By", collapsable: true, multipleChoice: false,
                 filterInputs: [
-                    FilterInput(name: "Best Match", code: 0),
+                    FilterInput(name: "Best Match", code: 0, switchValue: true),
                     FilterInput(name: "Distance", code: 1),
                     FilterInput(name: "Rating", code: 2)
                 ])
@@ -62,8 +62,12 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
                 })
             )
             category.numberOfVisibleRowsWhenMinimized = 3
-            category.collapsing = true
-            
+
+            // collapse a few sections
+            distance.collapsed = true
+            sort.collapsed = true
+            category.collapsed = true
+
             filterSections = [deals, distance, sort, category]
         }
     }
@@ -96,21 +100,23 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
     // TODO: refactor for categories
     func showSeeAllToggle(indexPath: NSIndexPath) -> Bool {
         let section = filterSections[indexPath.section]
-        return section.collapsing && (section.numberOfVisibleRowsWhenMinimized - 1 == indexPath.row)
+        return section.multipleChoice && section.collapsed && (section.numberOfVisibleRowsWhenMinimized - 1 == indexPath.row)
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        let section = filterSections[indexPath.section]
+
         if showSeeAllToggle(indexPath) {
             let cell = tableView.dequeueReusableCellWithIdentifier("SeeAllToggleCell", forIndexPath: indexPath) as! SeeAllToggleCell
             return cell
         } else {
             let cell = tableView.dequeueReusableCellWithIdentifier("SwitchCell", forIndexPath: indexPath) as! SwitchCell
 
-            let filterInput = filterSections[indexPath.section].filterInputs[indexPath.row]
+            let filterInput = section.visibleFilterInputs()[indexPath.row]
+
             cell.switchLabel.text = filterInput.name
-            
-            // TODO custom input besides onSwitch
-            cell.onSwitch.on = filterSections[indexPath.section].filterInputs[indexPath.row].switchValue
+            cell.onSwitch.on      = filterInput.switchValue
+            cell.filterInputIndex = filterInput.childIndex!
 
             cell.delegate = self
             return cell
@@ -138,22 +144,37 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
 
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         let cell = tableView.cellForRowAtIndexPath(indexPath)
+        let section = filterSections[indexPath.section]
 
         if (cell is SeeAllToggleCell) {
             // TODO: convert to collapsable section here?
             if showSeeAllToggle(indexPath) {
-                filterSections[indexPath.section].collapsing = false
+                section.collapsed = false
                 tableView.reloadSections(NSIndexSet(index: indexPath.section), withRowAnimation: UITableViewRowAnimation.Automatic)
             }
         }
     }
 
     // MARK: - SwitchCellDelegate
-
     func switchCell(switchCell: SwitchCell, didChangeValue value: Bool) {
+        println("remove value change")
+
         let indexPath = tableView.indexPathForCell(switchCell)!
-        println("\(indexPath.row)")
-        filterSections[indexPath.section].setValueForInput(indexPath.row, value: value)
+        let section = filterSections[indexPath.section]
+
+        section.setValueForInput(switchCell.filterInputIndex, value: value)
+
+        if !section.multipleChoice {
+            if section.areAllInputsOff() {
+                println("Toggling section off. \(indexPath)")
+                section.collapsed = false
+            } else {
+                println("Toggling section on. \(indexPath)")
+                section.collapsed = true
+            }
+        }
+
+        tableView.reloadSections(NSIndexSet(index: indexPath.section), withRowAnimation: UITableViewRowAnimation.Automatic)
     }
     
     /*

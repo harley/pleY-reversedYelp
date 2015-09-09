@@ -19,7 +19,7 @@ class FilterManager {
 class FilterSection:Printable {
     var name: String                // section name
     var collapsable: Bool           // whether can collapse into one row
-    var collapsing:Bool = false    // only for collapsable sections
+    var collapsed:Bool = false    // only for collapsable sections
     var multipleChoice: Bool        // if set to false, turning on any input will turn off other inputs
     var filterInputs: [FilterInput]!// input rows
     var numberOfVisibleRowsWhenMinimized:Int! = 1
@@ -29,11 +29,15 @@ class FilterSection:Printable {
         self.collapsable = collapsable
         self.multipleChoice = multipleChoice
         self.filterInputs = filterInputs
+
+        for (index, _) in enumerate(self.filterInputs) {
+            self.filterInputs[index].childIndex = index
+        }
     }
     
     // TODO consider collapsable and open
     func numberOfVisibleFilterInputs() -> Int {
-        if collapsing {
+        if collapsed {
             return numberOfVisibleRowsWhenMinimized
         } else {
             return filterInputs.count
@@ -44,6 +48,15 @@ class FilterSection:Printable {
         println("\(name): setting row \(rowIndex) with value \(value)")
         println("\(self)")
         filterInputs[rowIndex].switchValue = value
+
+        if value && !multipleChoice {
+            // unselect the others
+            for (index, input) in enumerate(filterInputs) {
+                if index != rowIndex {
+                    filterInputs[index].switchValue = false
+                }
+            }
+        }
     }
 
     func aggregatedFormInput() -> AnyObject? {
@@ -54,7 +67,7 @@ class FilterSection:Printable {
         } else {
             // TODO: for categories
             println("filterInputs: \(filterInputs)")
-            let inputs:[FilterInput] = filterInputs.filter{$0.switchValue == true}
+            let inputs:[FilterInput] = filterInputs.filter{$0.switchValue}
 
             if inputs.isEmpty {
                 ret = nil
@@ -67,8 +80,25 @@ class FilterSection:Printable {
         return ret
     }
 
+    func areAllInputsOff() -> Bool {
+        return filterInputs.filter({$0.switchValue}).isEmpty
+    }
+
     func aggregatedFormInputs() -> [AnyObject] {
         return filterInputs.filter({$0.switchValue}).map({$0.code})
+    }
+
+    func getSelectedInputs() -> [FilterInput] {
+        return filterInputs.filter({$0.switchValue})
+    }
+
+    func visibleFilterInputs() -> [FilterInput] {
+        if collapsed && !multipleChoice {
+            let selected = getSelectedInputs()
+            return selected.isEmpty ? filterInputs : selected
+        } else {
+            return filterInputs
+        }
     }
 
     var description: String {
@@ -251,7 +281,8 @@ class FilterSection:Printable {
 struct FilterInput {
     let name: String
     let code: AnyObject
-    var switchValue:Bool
+    var switchValue: Bool
+    var childIndex: Int?
     init(name: String, code: AnyObject, switchValue: Bool = false) {
         self.name = name
         self.code = code
