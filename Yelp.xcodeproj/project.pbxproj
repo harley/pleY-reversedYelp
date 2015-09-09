@@ -19,6 +19,8 @@
 		9D5671581B9E5BC40094324F /* SeeAllToggleCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D5671571B9E5BC40094324F /* SeeAllToggleCell.swift */; };
 		9D56715A1B9E738F0094324F /* BusinessCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D5671591B9E738F0094324F /* BusinessCollection.swift */; };
 		9D56715C1B9EEED00094324F /* FilterSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D56715B1B9EEED00094324F /* FilterSection.swift */; };
+		9D84943F1BA0364500CAC51A /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D84943E1BA0364500CAC51A /* DetailViewController.swift */; };
+		9D8494411BA0397D00CAC51A /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D8494401BA0397D00CAC51A /* MapKit.framework */; };
 		9DCA007E1B9DB070001EB0D2 /* BusinessCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DCA007D1B9DB070001EB0D2 /* BusinessCell.swift */; };
 		E2A4A7571B9DCA2D008F57FF /* SwitchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2A4A7561B9DCA2D008F57FF /* SwitchCell.swift */; };
 		E2A4A75B1B9DCCD4008F57FF /* FiltersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2A4A75A1B9DCCD4008F57FF /* FiltersViewController.swift */; };
@@ -52,6 +54,8 @@
 		9D5671571B9E5BC40094324F /* SeeAllToggleCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SeeAllToggleCell.swift; sourceTree = "<group>"; };
 		9D5671591B9E738F0094324F /* BusinessCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BusinessCollection.swift; sourceTree = "<group>"; };
 		9D56715B1B9EEED00094324F /* FilterSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FilterSection.swift; sourceTree = "<group>"; };
+		9D84943E1BA0364500CAC51A /* DetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
+		9D8494401BA0397D00CAC51A /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		9DCA007D1B9DB070001EB0D2 /* BusinessCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BusinessCell.swift; sourceTree = "<group>"; };
 		9DD1A5431B9DE517001C1EA4 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		BBD540129B10DFE60E8C24E2 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
@@ -65,6 +69,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9D8494411BA0397D00CAC51A /* MapKit.framework in Frameworks */,
 				03D1A025B413415787AD3DF3 /* libPods.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -165,6 +170,7 @@
 			children = (
 				22AAAA9B1AEA1EC300A544AF /* BusinessesViewController.swift */,
 				E2A4A75A1B9DCCD4008F57FF /* FiltersViewController.swift */,
+				9D84943E1BA0364500CAC51A /* DetailViewController.swift */,
 			);
 			name = "View Controllers";
 			sourceTree = "<group>";
@@ -172,6 +178,7 @@
 		4A7CA25ACD374CA0AC966A24 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9D8494401BA0397D00CAC51A /* MapKit.framework */,
 				C56EF0CE844A4EE5819C72AF /* libPods.a */,
 			);
 			name = Frameworks;
@@ -331,6 +338,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9D84943F1BA0364500CAC51A /* DetailViewController.swift in Sources */,
 				9DCA007E1B9DB070001EB0D2 /* BusinessCell.swift in Sources */,
 				9D56715A1B9E738F0094324F /* BusinessCollection.swift in Sources */,
 				9D5671581B9E5BC40094324F /* SeeAllToggleCell.swift in Sources */,

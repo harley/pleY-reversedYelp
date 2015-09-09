@@ -190,9 +190,19 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
 
-        let nc = segue.destinationViewController as! UINavigationController
-        let fvc = nc.topViewController as! FiltersViewController
-        fvc.delegate = self
+        if segue.identifier == "segueToFiltersNav" {
+            println("segue: \(segue.identifier)")
+            let nc = segue.destinationViewController as! UINavigationController
+            let fvc = nc.topViewController as! FiltersViewController
+            fvc.delegate = self
+        }
+        else {
+            println("segue: \(segue.identifier); sender: \(sender)")
+            let dc = segue.destinationViewController as! DetailViewController
+            let cell = sender as! BusinessCell
+            let indexPath = tableView.indexPathForCell(cell)!
+            dc.business = businesses[indexPath.row]
+        }
     }
 
     func mapFilterSectionToFilters(filterSections: [FilterSection]!) -> [String:AnyObject] {
