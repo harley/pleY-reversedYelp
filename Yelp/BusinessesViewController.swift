@@ -19,7 +19,7 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
     var searchBar: UISearchBar!
     var isSearching: Bool = false
     var currentFilters = [String : AnyObject]()
-
+    
     var offset: Int = 0
     let limit: Int = 20
     var total: Int = 0
@@ -190,8 +190,21 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
         fvc.delegate = self
     }
 
-    func filtersViewController(filtersViewController: FiltersViewController, didUpdateFilters filters: [String : AnyObject]) {
-        self.currentFilters = filters
-        loadBusinesses(filters)
+    func mapFilterSectionToFilters(filterSections: [FilterSection]!) -> [String:AnyObject] {
+        var filters = [String : AnyObject]()
+        filters["deals"] = filterSections[0].aggregatedFormInput()
+        filters["radius"] = filterSections[1].aggregatedFormInput()
+        filters["sort"] = filterSections[2].aggregatedFormInput()
+
+        let cat = filterSections[3].aggregatedFormInputs()
+        filters["categories"] = cat.isEmpty ? nil : cat
+
+        return filters
+    }
+
+    func filtersViewController(filtersViewController: FiltersViewController, didUpdateFilters filterSections: [FilterSection]) {
+        self.currentFilters = mapFilterSectionToFilters(filterSections)
+        FilterManager.savedInstance = filterSections
+        loadBusinesses(currentFilters)
     }
 }

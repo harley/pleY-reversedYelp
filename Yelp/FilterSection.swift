@@ -12,12 +12,17 @@ enum FilterSectionName: Int {
     case Deals = 0, Distance, Sort, Categories
 }
 
-class FilterSection {
+class FilterManager {
+    static var savedInstance: [FilterSection]?
+}
+
+class FilterSection:Printable {
     var name: String                // section name
     var collapsable: Bool           // whether can collapse into one row
-//    var open:Bool! = false        // only for collapsable sections
+    var collapsing:Bool = false    // only for collapsable sections
     var multipleChoice: Bool        // if set to false, turning on any input will turn off other inputs
     var filterInputs: [FilterInput]!// input rows
+    var numberOfVisibleRowsWhenMinimized:Int! = 1
 
     init(name: String, collapsable: Bool, multipleChoice: Bool, filterInputs: [FilterInput]) {
         self.name = name
@@ -28,7 +33,46 @@ class FilterSection {
     
     // TODO consider collapsable and open
     func numberOfVisibleFilterInputs() -> Int {
-        return filterInputs.count
+        if collapsing {
+            return numberOfVisibleRowsWhenMinimized
+        } else {
+            return filterInputs.count
+        }
+    }
+
+    func setValueForInput(rowIndex: Int, value: Bool) {
+        println("\(name): setting row \(rowIndex) with value \(value)")
+        println("\(self)")
+        filterInputs[rowIndex].switchValue = value
+    }
+
+    func aggregatedFormInput() -> AnyObject? {
+        var ret:AnyObject?
+
+        if multipleChoice {
+            ret = nil
+        } else {
+            // TODO: for categories
+            println("filterInputs: \(filterInputs)")
+            let inputs:[FilterInput] = filterInputs.filter{$0.switchValue == true}
+
+            if inputs.isEmpty {
+                ret = nil
+            } else {
+                ret = inputs.first?.code
+            }
+        }
+
+        println("ret: \(ret)")
+        return ret
+    }
+
+    func aggregatedFormInputs() -> [AnyObject] {
+        return filterInputs.filter({$0.switchValue}).map({$0.code})
+    }
+
+    var description: String {
+        return("FilterSection \(name). Selected inputs: \(aggregatedFormInput())")
     }
     
     class func yelpCategories() -> [[String:String]] {
@@ -206,5 +250,11 @@ class FilterSection {
 
 struct FilterInput {
     let name: String
-    let code: AnyObject?
+    let code: AnyObject
+    var switchValue:Bool
+    init(name: String, code: AnyObject, switchValue: Bool = false) {
+        self.name = name
+        self.code = code
+        self.switchValue = switchValue
+    }
 }
